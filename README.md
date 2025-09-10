@@ -140,3 +140,6 @@ Si quieres colaborar o tienes preguntas, abre un issue o PR en este repositorio.
 ---
 
 _Notas finales:_ Reemplaza los metadatos de la licencia (`LICENSE`) con tu nombre si quieres que aparezca tu autoría.
+
+<!-- CI trigger -->
+Última acción: reintentar despliegue (CI trigger).
