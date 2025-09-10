@@ -1,11 +1,100 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import PromptCard from "../components/PromptCard.astro";
+import { getHomePageData, type HomePageData } from "../utils/data";
+import type { Prompt, PromptCategory } from "../types";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const data = await getHomePageData();
+const prompts = data?.prompts || [];
+const categories = data?.categories || [];
+const totalResponses = data?.totalResponses || 0;
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Dub Techno Prompts"
+  description="A curated collection of musical production prompts and AI responses for dub techno producers"
+>
+  <!-- Hero Section -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-deep-100 mb-4">
+      <span
+        class="bg-gradient-to-r from-neon-400 to-bass-400 bg-clip-text text-transparent"
+      >
+        Dub Techno Prompts
+      </span>
+    </h1>
+    <p class="text-lg text-deep-300 max-w-2xl mx-auto mb-8">
+      A personal collection of musical production prompts and responses from
+      various AI models. Explore techniques, sound design, and production
+      workflows for dub techno.
+    </p>
+
+    <!-- Quick Stats -->
+    <div class="flex justify-center gap-8 text-center">
+      <div class="bg-deep-900/50 border border-deep-800 rounded-lg px-6 py-4">
+        <div class="text-2xl font-bold text-neon-400">
+          {prompts.length}
+        </div>
+        <div class="text-sm text-deep-400">Prompts</div>
+      </div>
+      <div class="bg-deep-900/50 border border-deep-800 rounded-lg px-6 py-4">
+        <div class="text-2xl font-bold text-bass-400">
+          {categories.length}
+        </div>
+        <div class="text-sm text-deep-400">Categories</div>
+      </div>
+      <div class="bg-deep-900/50 border border-deep-800 rounded-lg px-6 py-4">
+        <div class="text-2xl font-bold text-purple-400">
+          {totalResponses}
+        </div>
+        <div class="text-sm text-deep-400">AI Responses</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="mb-8">
+    <h2 class="text-xl font-semibold text-deep-100 mb-4">Categories</h2>
+    <div class="flex flex-wrap gap-3">
+      <button
+        class="px-4 py-2 bg-neon-500 text-deep-950 rounded-lg font-medium text-sm transition-all hover:bg-neon-400"
+      >
+        All Prompts
+      </button>
+      {
+        categories.map((category: any) => (
+          <button
+            class={`px-4 py-2 ${category.color} text-white rounded-lg font-medium text-sm transition-all hover:opacity-80`}
+          >
+            {category.name}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Prompts Grid -->
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {prompts.map((prompt: any) => <PromptCard prompt={prompt} />)}
+  </div>
+
+  <!-- Empty State (if no prompts) -->
+  {
+    prompts.length === 0 && (
+      <div class="text-center py-16">
+        <div class="bg-deep-900/50 border border-deep-800 rounded-xl p-12 max-w-md mx-auto">
+          <div class="text-4xl mb-4">🎵</div>
+          <h3 class="text-xl font-semibold text-deep-100 mb-2">
+            No prompts yet
+          </h3>
+          <p class="text-deep-400 mb-6">
+            Start building your collection of dub techno production prompts.
+          </p>
+          <button class="bg-neon-500 hover:bg-neon-400 text-deep-950 px-6 py-2 rounded-lg font-medium transition-colors">
+            Add First Prompt
+          </button>
+        </div>
+      </div>
+    )
+  }
 </Layout>

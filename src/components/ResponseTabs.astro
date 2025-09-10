@@ -1,0 +1,105 @@
+---
+import type { LLMResponse } from '../types';
+import { getModelColor, formatTimestamp } from '../utils/data';
+
+export interface Props {
+  responses?: LLMResponse[];
+}
+
+const { responses = [] } = Astro.props;
+---
+
+<div class="mt-8">
+  <h3 class="text-xl font-semibold text-deep-100 mb-6">LLM Responses</h3>
+  
+  {responses.length === 0 ? (
+    <div class="bg-deep-900/50 border border-deep-800 rounded-xl p-8 text-center">
+      <p class="text-deep-400">No responses yet for this prompt.</p>
+    </div>
+  ) : (
+    <div class="space-y-1" id="response-tabs">
+      <!-- Tab Navigation -->
+      <div class="flex space-x-1 bg-deep-900/50 p-1 rounded-lg border border-deep-800">
+        {responses.map((response, index) => (
+          <button
+            class={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button ${index === 0 ? 'bg-neon-500 text-deep-950' : 'text-deep-300 hover:text-deep-100 hover:bg-deep-800'}`}
+            data-tab={index}
+          >
+            <div class="flex items-center justify-center gap-2">
+              <span>{response.model}</span>
+              {response.version && (
+                <span class="text-xs opacity-75">({response.version})</span>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <!-- Tab Content -->
+      <div class="mt-4">
+        {responses.map((response, index) => (
+          <div
+            class={`tab-content bg-deep-900/50 border border-deep-800 rounded-xl p-6 transition-all duration-200 ${index === 0 ? '' : 'hidden'}`}
+            data-tab-content={index}
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <span class={`px-3 py-1 text-xs font-medium rounded-full border ${getModelColor(response.model)}`}>
+                  {response.model}
+                </span>
+                {response.version && (
+                  <span class="text-deep-400 text-sm">{response.version}</span>
+                )}
+              </div>
+              <time class="text-deep-500 text-sm">
+                {formatTimestamp(response.timestamp)}
+              </time>
+            </div>
+            
+            <div class="prose prose-invert prose-sm max-w-none">
+              <div class="text-deep-200 leading-relaxed whitespace-pre-wrap">
+                {response.response}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+<script define:vars={{ responses }}>
+  const tabContainer = document.getElementById('response-tabs');
+  if (!tabContainer) return;
+
+  const tabButtons = Array.from(tabContainer.querySelectorAll('.tab-button'));
+  const tabContents = Array.from(tabContainer.querySelectorAll('.tab-content'));
+
+  tabContainer.addEventListener('click', (event) => {
+    const targetButton = event.target.closest('.tab-button');
+    if (!targetButton) return;
+
+    const tabIndex = targetButton.getAttribute('data-tab');
+
+    // Deactivate all buttons and hide all content
+    tabButtons.forEach((btn, index) => {
+      btn.classList.remove('bg-neon-500', 'text-deep-950');
+      btn.classList.add('text-deep-300', 'hover:text-deep-100', 'hover:bg-deep-800');
+      
+      const content = tabContents[index];
+      if (content) {
+        content.classList.add('hidden');
+      }
+    });
+
+    // Activate clicked button
+    targetButton.classList.add('bg-neon-500', 'text-deep-950');
+    targetButton.classList.remove('text-deep-300', 'hover:text-deep-100', 'hover:bg-deep-800');
+
+    // Show the corresponding tab content
+    const targetContent = tabContainer.querySelector(`[data-tab-content="${tabIndex}"]`);
+    if (targetContent) {
+      targetContent.classList.remove('hidden');
+    }
+  });
+</script>

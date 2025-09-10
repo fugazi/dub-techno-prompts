@@ -1,22 +1,65 @@
+---
+export interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "Musical production prompts and LLM responses for dub techno producers" } = Astro.props;
+import '../styles/global.css';
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+			<link rel="preconnect" href="https://fonts.googleapis.com">
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body class="bg-deep-950 text-deep-100 font-sans min-h-screen">
+		<div class="relative min-h-screen">
+			<!-- Background gradient -->
+			<div class="fixed inset-0 bg-gradient-to-br from-deep-900 via-deep-950 to-deep-950 -z-10"></div>
+
+			<!-- Header -->
+			<header class="border-b border-deep-800 bg-deep-950/60 backdrop-blur-sm sticky top-0 z-50">
+				<div class="container-max mx-auto px-6">
+					<div class="flex items-center justify-between h-16">
+						<a href="/" class="flex items-center space-x-3 group">
+							<div class="w-8 h-8 bg-gradient-to-r from-neon-400 to-bass-400 rounded-lg flex items-center justify-center">
+								<span class="text-deep-950 font-bold text-sm">DT</span>
+							</div>
+							<span class="text-xl font-semibold text-deep-100 group-hover:text-neon-400 transition-colors">
+								Dub Techno Prompts
+							</span>
+						</a>
+
+						<nav class="hidden md:flex space-x-6">
+							<a href="/" class="text-deep-300 hover:text-neon-400 transition-colors">Prompts</a>
+							<a href="/categories" class="text-deep-300 hover:text-neon-400 transition-colors">Categories</a>
+						</nav>
+					</div>
+				</div>
+			</header>
+
+			<!-- Main content -->
+			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				<slot />
+			</main>
+
+			<!-- Footer -->
+			<footer class="border-t border-deep-800 mt-16">
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+					<div class="text-center text-deep-400 text-sm">
+						<p>&copy; 2025 Dub Techno Prompts. A personal collection of musical production insights.</p>
+					</div>
+				</div>
+			</footer>
+		</div>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

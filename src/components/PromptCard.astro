@@ -1,0 +1,64 @@
+---
+import type { Prompt } from '../types';
+import { formatDate, getCategoryById } from '../utils/data';
+
+export interface Props {
+  prompt: Prompt;
+}
+
+const { prompt } = Astro.props;
+const category = await getCategoryById(prompt.category);
+---
+
+<article class="bg-deep-900/50 border border-deep-800 rounded-xl p-6 hover:border-neon-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-neon-500/10 group">
+  <div class="flex items-start justify-between mb-4">
+    <div class="flex-1">
+      <div class="flex items-center gap-3 mb-2">
+        <h3 class="text-lg font-semibold text-deep-100 group-hover:text-neon-400 transition-colors">
+          {prompt.title}
+        </h3>
+        {category && (
+          <span class={`px-2 py-1 text-xs font-medium rounded-full ${category.color} text-white`}>
+            {category.name}
+          </span>
+        )}
+      </div>
+      <p class="text-deep-300 text-sm mb-3 line-clamp-2">
+        {prompt.description}
+      </p>
+    </div>
+  </div>
+  
+  <div class="mb-2 flex flex-wrap gap-2">
+    {prompt.tags && prompt.tags.map(tag => (
+      <span class="text-neon-400 text-xs">#{tag}</span>
+    ))}
+  </div>
+  <div class="grid grid-cols-2 items-center text-sm text-deep-400">
+    <div class="flex items-center">
+      <span class="inline-flex items-center gap-1 bg-neon-950/60 border border-neon-700 text-neon-400 px-3 py-1 rounded-full font-semibold shadow-sm text-xs">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2m2-4h6a2 2 0 012 2v4H7V6a2 2 0 012-2z" />
+        </svg>
+        {prompt.responses?.length ?? 0} response{(prompt.responses?.length ?? 0) !== 1 ? 's' : ''}
+      </span>
+    </div>
+    <div class="flex justify-end">
+      <time class="text-deep-500">
+        {formatDate(prompt.createdAt)}
+      </time>
+    </div>
+  </div>
+  
+  <div class="mt-4 pt-4 border-t border-deep-800">
+    <a 
+      href={`/prompt/${prompt.id}`}
+      class="inline-flex items-center text-neon-400 hover:text-neon-300 text-sm font-medium transition-colors"
+    >
+      View Details
+      <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </a>
+  </div>
+</article>

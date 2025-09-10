@@ -1,0 +1,82 @@
+---
+// @ts-nocheck
+import Layout from '../../layouts/Layout.astro';
+import ResponseTabs from '../../components/ResponseTabs.astro';
+import { formatDate } from '../../utils/data';
+import { getCollection, getEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('prompts');
+  return entries.map(e => ({ params: { id: (e.data && e.data.id) || e.slug || e.id } }));
+}
+
+const id = Astro.params.id;
+const allEntries = await getCollection('prompts');
+const entry = allEntries.find(e => (e.data && e.data.id) === id || e.slug === id || e.id === id);
+if (!entry) throw new Error(`Prompt not found: ${id}`);
+const prompt = entry.data;
+const categoryEntry = (await getCollection('categories')).find(c => (c.data && c.data.id) === prompt.category || c.slug === prompt.category || c.id === prompt.category) || undefined;
+const category = categoryEntry ? categoryEntry.data : null;
+---
+
+<Layout title={`${prompt.title} | Dub Techno Prompts`} description={prompt.description}>
+  <!-- Navigation Breadcrumb -->
+  <nav class="flex items-center space-x-2 text-sm text-deep-400 mb-8">
+    <a href="/" class="hover:text-neon-400 transition-colors">Home</a>
+    <span>/</span>
+    <span class="text-deep-200">Prompt Details</span>
+  </nav>
+
+  <!-- Prompt Header -->
+  <header class="mb-8">
+    <div class="flex items-start justify-between mb-4">
+      <div class="flex-1">
+        <div class="flex items-center gap-3 mb-4">
+          <h1 class="text-3xl md:text-4xl font-bold text-deep-100">{prompt.title}</h1>
+          {category && (
+            <span class={`px-3 py-1 text-sm font-medium rounded-full ${category.color} text-white`}>
+              {category.name}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    {(prompt.tags ?? []).length > 0 && (
+      <div class="flex flex-wrap gap-2">
+        {(prompt.tags ?? []).map(tag => (
+          <span class="px-3 py-1 text-xs font-medium bg-deep-800 text-neon-400 rounded-full border border-deep-700">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </header>
+
+  <!-- The Prompt -->
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold text-deep-100 mb-4">The Prompt</h2>
+    <div class="bg-deep-900/50 border border-deep-800 rounded-xl p-6">
+      <div class="prose prose-invert prose-sm max-w-none">
+        <p class="text-deep-200 leading-relaxed whitespace-pre-wrap">{prompt.prompt}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Responses -->
+  <ResponseTabs responses={prompt.responses ?? []} />
+
+  <!-- Back to Home -->
+  <div class="mt-12 pt-8 border-t border-deep-800">
+    <a 
+      href="/" 
+      class="inline-flex items-center text-neon-400 hover:text-neon-300 font-medium transition-colors"
+    >
+      <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to all prompts
+    </a>
+  </div>
+</Layout>
