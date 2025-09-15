@@ -1,22 +1,31 @@
 ---
-// @ts-nocheck
 import Layout from '../../layouts/Layout.astro';
 import ResponseTabs from '../../components/ResponseTabs.astro';
 import { formatDate } from '../../utils/data';
 import { getCollection, getEntry } from 'astro:content';
+import { marked } from 'marked';
+
+// Configurar marked
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
 
 export async function getStaticPaths() {
   const entries = await getCollection('prompts');
-  return entries.map(e => ({ params: { id: (e.data && e.data.id) || e.slug || e.id } }));
+  return entries.map((e: any) => ({ params: { id: e.data.id || e.id } }));
 }
 
-const id = Astro.params.id;
+const id = (Astro.params as any).id;
 const allEntries = await getCollection('prompts');
-const entry = allEntries.find(e => (e.data && e.data.id) === id || e.slug === id || e.id === id);
+const entry = allEntries.find((e: any) => (e.data.id || e.id) === id);
 if (!entry) throw new Error(`Prompt not found: ${id}`);
 const prompt = entry.data;
-const categoryEntry = (await getCollection('categories')).find(c => (c.data && c.data.id) === prompt.category || c.slug === prompt.category || c.id === prompt.category) || undefined;
+const categoryEntry = (await getCollection('categories')).find((c: any) => c.id === prompt.category);
 const category = categoryEntry ? categoryEntry.data : null;
+
+// Parse the prompt (content is controlled, low security risk)
+const parsedPrompt = marked(prompt.prompt);
 ---
 
 <Layout title={`${prompt.title} | Dub Techno Prompts`} description={prompt.description}>
@@ -45,7 +54,7 @@ const category = categoryEntry ? categoryEntry.data : null;
     <!-- Tags -->
     {(prompt.tags ?? []).length > 0 && (
       <div class="flex flex-wrap gap-2">
-        {(prompt.tags ?? []).map(tag => (
+        {(prompt.tags ?? []).map((tag: string) => (
           <span class="px-3 py-1 text-xs font-medium bg-deep-800 text-neon-400 rounded-full border border-deep-700">
             #{tag}
           </span>
@@ -59,7 +68,7 @@ const category = categoryEntry ? categoryEntry.data : null;
     <h2 class="text-xl font-semibold text-deep-100 mb-4">The Prompt</h2>
     <div class="bg-deep-900/50 border border-deep-800 rounded-xl p-6">
       <div class="prose prose-invert prose-sm max-w-none">
-        <p class="text-deep-200 leading-relaxed whitespace-pre-wrap">{prompt.prompt}</p>
+        <div class="text-deep-200 leading-relaxed" set:html={parsedPrompt}></div>
       </div>
     </div>
   </section>

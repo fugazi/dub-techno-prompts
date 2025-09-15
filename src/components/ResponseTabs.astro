@@ -1,12 +1,22 @@
 ---
 import type { LLMResponse } from '../types';
 import { getModelColor, formatTimestamp } from '../utils/data';
+import { marked } from 'marked';
+
+// Configurar marked
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
 
 export interface Props {
   responses?: LLMResponse[];
 }
 
 const { responses = [] } = Astro.props;
+
+// Función para parsear respuesta
+const parseResponse = (response: string) => marked(response);
 ---
 
 <div class="mt-8">
@@ -57,9 +67,7 @@ const { responses = [] } = Astro.props;
             </div>
             
             <div class="prose prose-invert prose-sm max-w-none">
-              <div class="text-deep-200 leading-relaxed whitespace-pre-wrap">
-                {response.response}
-              </div>
+              <div class="text-deep-200 leading-relaxed" set:html={parseResponse(response.response)}></div>
             </div>
           </div>
         ))}
