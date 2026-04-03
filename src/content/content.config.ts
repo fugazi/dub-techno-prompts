@@ -16,21 +16,26 @@ const promptCollection = defineCollection({
     id: z.string(),
     title: z.string(),
     description: z.string(),
-    prompt: z.string(),
     category: z.string(),
     tags: z.array(z.string()),
     createdAt: z.date(),
-    updatedAt: z.date(),
-    responses: z.array(z.object({
-      model: z.string(),
-      version: z.string().optional(),
-      response: z.string(),
-      timestamp: z.date()
-    })).optional().default([])
+    updatedAt: z.date()
+  })
+});
+
+const responseCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    id: z.string(),
+    promptId: z.string(),
+    model: z.string(),
+    version: z.string().optional(),
+    timestamp: z.date()
   })
 });
 
 export const collections = {
   categories: categoryCollection,
-  prompts: promptCollection
+  prompts: promptCollection,
+  responses: responseCollection
 };

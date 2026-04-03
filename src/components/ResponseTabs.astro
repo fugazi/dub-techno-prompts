@@ -1,22 +1,11 @@
 ---
-import type { LLMResponse } from '../types';
 import { getModelColor, formatTimestamp } from '../utils/data';
-import { marked } from 'marked';
-
-// Configurar marked
-marked.setOptions({
-  breaks: true,
-  gfm: true
-});
 
 export interface Props {
-  responses?: LLMResponse[];
+  responses?: any[];
 }
 
 const { responses = [] } = Astro.props;
-
-// Función para parsear respuesta
-const parseResponse = (response: string) => marked(response);
 ---
 
 <div class="mt-8">
@@ -36,9 +25,9 @@ const parseResponse = (response: string) => marked(response);
             data-tab={index}
           >
             <div class="flex items-center justify-center gap-2">
-              <span>{response.model}</span>
-              {response.version && (
-                <span class="text-xs opacity-75">({response.version})</span>
+              <span>{response.data.model}</span>
+              {response.data.version && (
+                <span class="text-xs opacity-75">({response.data.version})</span>
               )}
             </div>
           </button>
@@ -54,20 +43,22 @@ const parseResponse = (response: string) => marked(response);
           >
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
-                <span class={`px-3 py-1 text-xs font-medium rounded-full border ${getModelColor(response.model)}`}>
-                  {response.model}
+                <span class={`px-3 py-1 text-xs font-medium rounded-full border ${getModelColor(response.data.model)}`}>
+                  {response.data.model}
                 </span>
-                {response.version && (
-                  <span class="text-deep-400 text-sm">{response.version}</span>
+                {response.data.version && (
+                  <span class="text-deep-400 text-sm">{response.data.version}</span>
                 )}
               </div>
               <time class="text-deep-500 text-sm">
-                {formatTimestamp(response.timestamp)}
+                {formatTimestamp(response.data.timestamp)}
               </time>
             </div>
-            
+
             <div class="prose prose-invert prose-sm max-w-none">
-              <div class="text-deep-200 leading-relaxed" set:html={parseResponse(response.response)}></div>
+              <div class="text-deep-200 leading-relaxed">
+                {response.render()}
+              </div>
             </div>
           </div>
         ))}
