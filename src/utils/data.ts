@@ -4,14 +4,14 @@ import { getCollection } from 'astro:content';
 export async function getAllPrompts(): Promise<Prompt[]> {
   const entries = await getCollection('prompts');
   if (!Array.isArray(entries)) return [];
-  return entries.map((e: any) => ({ ...e.data, id: e.slug }) as Prompt);
+  return entries.map((e: any) => ({ ...e.data, id: e.id }) as Prompt);
 }
 
 export async function getPromptById(id: string): Promise<Prompt | undefined> {
   const entries = await getCollection('prompts');
-  const entry = entries.find((e: any) => e.slug === id);
+  const entry = entries.find((e: any) => e.id === id);
   if (!entry) return undefined;
-  return { ...entry.data, id: entry.slug } as Prompt;
+  return { ...entry.data, id: entry.id } as Prompt;
 }
 
 export async function getPromptsByCategory(categoryId: string): Promise<Prompt[]> {

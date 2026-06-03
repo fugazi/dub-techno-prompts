@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ResponseTabs from "../../components/ResponseTabs.astro";
-import { getCollection, Content } from "astro:content";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
   const entries = await getCollection("prompts");
@@ -14,7 +14,7 @@ const entry = allEntries.find((e: any) => (e.data.id || e.id) === id);
 if (!entry) throw new Error(`Prompt not found: ${id}`);
 const prompt = entry.data;
 const categoryEntry = (await getCollection("categories")).find(
-  (c: any) => c.id === prompt.category
+  (c: any) => c.data.id === prompt.category
 );
 const category = categoryEntry ? categoryEntry.data : null;
 
@@ -25,7 +25,7 @@ const responses = allResponses.filter(
 );
 
 // Render the prompt content
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 ---
 
 <Layout

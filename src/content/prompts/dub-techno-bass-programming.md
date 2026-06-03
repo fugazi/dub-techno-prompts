@@ -10,6 +10,7 @@ tags:
   - ableton-live
 createdAt: 2025-09-10T10:00:00Z
 updatedAt: 2025-09-10T12:00:00Z
+responses:
   - model: ChatGPT
     version: GPT-5
     response: |

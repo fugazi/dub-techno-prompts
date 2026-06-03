@@ -1,17 +1,25 @@
 ---
 import { getModelColor, formatTimestamp } from '../utils/data';
+import { render } from 'astro:content';
 
 export interface Props {
   responses?: any[];
 }
 
 const { responses = [] } = Astro.props;
+
+const renderedResponses = await Promise.all(
+  responses.map(async (response) => {
+    const { Content } = await render(response);
+    return { ...response, Content };
+  })
+);
 ---
 
 <div class="mt-8">
   <h3 class="text-xl font-semibold text-deep-100 mb-6">LLM Responses</h3>
-  
-  {responses.length === 0 ? (
+
+  {renderedResponses.length === 0 ? (
     <div class="bg-deep-900/50 border border-deep-800 rounded-xl p-8 text-center">
       <p class="text-deep-400">No responses yet for this prompt.</p>
     </div>
@@ -19,7 +27,7 @@ const { responses = [] } = Astro.props;
     <div class="space-y-1" id="response-tabs">
       <!-- Tab Navigation -->
       <div class="flex space-x-1 bg-deep-900/50 p-1 rounded-lg border border-deep-800">
-        {responses.map((response, index) => (
+        {renderedResponses.map((response, index) => (
           <button
             class={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button ${index === 0 ? 'bg-neon-500 text-deep-950' : 'text-deep-300 hover:text-deep-100 hover:bg-deep-800'}`}
             data-tab={index}
@@ -36,7 +44,7 @@ const { responses = [] } = Astro.props;
 
       <!-- Tab Content -->
       <div class="mt-4">
-        {responses.map((response, index) => (
+        {renderedResponses.map((response, index) => (
           <div
             class={`tab-content bg-deep-900/50 border border-deep-800 rounded-xl p-6 transition-all duration-200 ${index === 0 ? '' : 'hidden'}`}
             data-tab-content={index}
@@ -57,7 +65,7 @@ const { responses = [] } = Astro.props;
 
             <div class="prose prose-invert prose-sm max-w-none">
               <div class="text-deep-200 leading-relaxed">
-                {response.render()}
+                <response.Content />
               </div>
             </div>
           </div>
@@ -84,7 +92,7 @@ const { responses = [] } = Astro.props;
     tabButtons.forEach((btn, index) => {
       btn.classList.remove('bg-neon-500', 'text-deep-950');
       btn.classList.add('text-deep-300', 'hover:text-deep-100', 'hover:bg-deep-800');
-      
+
       const content = tabContents[index];
       if (content) {
         content.classList.add('hidden');
