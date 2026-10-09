@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
-    "@esbuild/win32-x64": "^0.28.1",
     "@types/jsdom": "^28.0.3",
     "astro": "^7.1.6",
     "dompurify": "^3.4.12",
